@@ -1,0 +1,62 @@
+﻿@model CodeZoneTask.Presentation.ViewModels.StockViewModel
+
+@{
+    ViewData["Title"] = "Manage Stock";
+}
+
+<h1>Manage Stock</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateStock" id="stockForm">
+            <div class="form-group">
+                <label asp-for="StoreId" class="control-label">Store</label>
+                <select asp-for="StoreId" class="form-control" asp-items="ViewBag.Stores" id="storeSelect"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ItemId" class="control-label">Item</label>
+                <select asp-for="ItemId" class="form-control" asp-items="ViewBag.Items" id="itemSelect"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quantity" class="control-label">Quantity to Add</label>
+                <input asp-for="Quantity" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Current Quantity</label>
+                <input type="text" id="currentQuantity" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function loadCurrentQuantity() {
+            var storeId = $('#storeSelect').val();
+            var itemId = $('#itemSelect').val();
+            if (storeId && itemId) {
+                $.ajax({
+                    url: '@Url.Action("GetCurrentQuantity", "Stock")',
+                    type: 'GET',
+                    data: { storeId: storeId, itemId: itemId },
+                    success: function (data) {
+                        $('#currentQuantity').val(data);
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            loadCurrentQuantity();
+
+            $('#storeSelect, #itemSelect').change(function () {
+                loadCurrentQuantity();
+            });
+        });
+    </script>
+}
